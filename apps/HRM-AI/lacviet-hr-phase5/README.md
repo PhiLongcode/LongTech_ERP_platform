@@ -6,28 +6,27 @@ Phase 5 bổ sung 2 module enterprise-grade cho LAC VIET HR:
 1. **Compensation Planning** - Quản lý lương thưởng và ngân sách
 2. **Succession Planning** - Quản lý kế nhiệm và phát triển nhân tài
 
+Tài liệu này mô tả phạm vi Phase 5 ở mức module/domain. Khi tích hợp vào ứng dụng chính, cần map lại auth, middleware, routing và schema migration theo kiến trúc của `apps/HRM`.
+
 ---
 
 ## 🏗️ Architecture
 
 ```
-vierp-hrm-phase5/
+lacviet-hr-phase5/
 ├── compensation-planning/
-│   ├── types/
-│   │   └── compensation.types.ts      # Types & Interfaces
-│   ├── services/
-│   │   └── compensation.service.ts    # Business Logic
-│   └── api/
-│       └── compensation.controller.ts # REST API
-│
+│   ├── api/compensation.controller.ts
+│   ├── services/compensation.service.ts
+│   ├── types/compensation.types.ts
+│   └── components/index.tsx
 ├── succession-planning/
-│   ├── types/
-│   │   └── succession.types.ts        # Types & Interfaces
-│   ├── services/
-│   │   └── succession.service.ts      # Business Logic
-│   └── api/
-│       └── succession.controller.ts   # REST API
-│
+│   ├── api/succession.controller.ts
+│   ├── services/succession.service.ts
+│   ├── types/succession.types.ts
+│   └── components/index.tsx
+├── hooks/index.ts
+├── prisma/schema.prisma
+├── src/modules/compensation/types/index.ts
 └── README.md
 ```
 
@@ -59,7 +58,7 @@ vierp-hrm-phase5/
 - TotalRewardsStatement   // Báo cáo tổng thu nhập
 ```
 
-### API Endpoints
+### API Endpoints (module design)
 
 ```
 GET    /api/compensation/cycles                 # List cycles
@@ -154,7 +153,7 @@ LOW PERF    │  Inconsistent   │  Up or Out          │  Talent Risk    │
 | Ready 3+ Years | Long-term potential | 24+ months |
 | Not Ready | Gaps đáng kể | Significant development |
 
-### API Endpoints
+### API Endpoints (module design)
 
 ```
 # Critical Positions
@@ -197,21 +196,15 @@ GET    /api/succession/dashboard
 
 ---
 
-## 🔧 Installation
+## 🔧 Integration Notes
 
 ```bash
-# Install dependencies
-npm install
+# 1) Merge schema additions into main prisma schema
+# 2) Run migration in integrated app
+npx prisma migrate dev
 
-# Add to Prisma schema
-npx prisma db push
-
-# Import routes in main app
-import compensationRoutes from './compensation-planning/api/compensation.controller';
-import successionRoutes from './succession-planning/api/succession.controller';
-
-app.use('/api/compensation', compensationRoutes);
-app.use('/api/succession', successionRoutes);
+# 3) Wire module controllers/services into existing app router
+# (adapting to current framework conventions)
 ```
 
 ---
@@ -309,18 +302,18 @@ model SuccessionPlan {
 
 ---
 
-## 📁 File Summary
+## 📁 File Summary (current repository snapshot)
 
 | File | Lines | Description |
 |------|-------|-------------|
-| compensation.types.ts | ~650 | Types, enums, interfaces |
-| compensation.service.ts | ~750 | Business logic |
-| compensation.controller.ts | ~350 | REST API |
-| succession.types.ts | ~850 | Types, enums, interfaces |
-| succession.service.ts | ~900 | Business logic |
-| succession.controller.ts | ~280 | REST API |
+| compensation.types.ts | Domain types | Types, enums, interfaces |
+| compensation.service.ts | Service layer | Compensation business logic |
+| compensation.controller.ts | API layer | Compensation endpoints |
+| succession.types.ts | Domain types | Types, enums, interfaces |
+| succession.service.ts | Service layer | Succession business logic |
+| succession.controller.ts | API layer | Succession endpoints |
 
-**Total: ~3,780 lines of code**
+Ghi chú: số dòng code thay đổi theo từng lần cập nhật, nên không cố định tổng LOC trong tài liệu này.
 
 ---
 

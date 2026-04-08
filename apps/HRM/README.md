@@ -6,6 +6,12 @@
 
 VietERP-HRM là hệ thống HRM nội bộ với phân quyền 6 vai trò (RBAC), tích hợp AI Copilot hỗ trợ nghiệp vụ HR. Hệ thống xử lý tuyển dụng, hợp đồng, chấm công, tính lương (thuế TNCN Việt Nam), KPI, đánh giá hiệu suất và xuất tài liệu tự động.
 
+Trọng tâm backend hiện tại:
+- API theo domain nghiệp vụ (Employee lifecycle, Attendance, Payroll, Recruitment, Onboarding/Offboarding)
+- Bảo mật truy cập bằng NextAuth 5 (Credentials + JWT), phân quyền theo vai trò và khóa tạm đăng nhập sai nhiều lần
+- Dữ liệu quan hệ phức tạp trên Prisma + PostgreSQL với audit log cho thao tác nhạy cảm
+- Endpoint OpenAPI/Swagger tại `/api/docs` và giao diện xem tài liệu tại `/api/docs/ui`
+
 ## Công nghệ
 
 | Thành phần | Công nghệ |
@@ -13,7 +19,7 @@ VietERP-HRM là hệ thống HRM nội bộ với phân quyền 6 vai trò (RBAC
 | Framework | Next.js 14 (App Router) |
 | Ngôn ngữ | TypeScript 5 |
 | Database | PostgreSQL 16+ · Prisma 7 |
-| Auth | NextAuth 5 (JWT) |
+| Auth | NextAuth 5 (Credentials + JWT) |
 | UI | Tailwind CSS 3 · Radix UI · shadcn/ui |
 | State | Zustand · React Query |
 | AI | Claude API (HR Copilot) |
@@ -32,6 +38,20 @@ VietERP-HRM là hệ thống HRM nội bộ với phân quyền 6 vai trò (RBAC
 - **Tạm ứng lương** — Yêu cầu và phê duyệt
 - **Mẫu tài liệu** — Xuất văn bản tự động (docxtemplater)
 - **HR Copilot** — Trợ lý AI hỗ trợ tra cứu nhân sự, báo cáo
+
+## Bảo mật và toàn vẹn dữ liệu
+
+- **Authentication**: NextAuth Credentials, phiên JWT, middleware bảo vệ route
+- **Access control**: RBAC theo vai trò nghiệp vụ (Super Admin, HR Manager, HR Staff, Dept Manager, Employee, Accountant)
+- **Login hardening**: khóa tạm khi đăng nhập sai liên tiếp để giảm brute-force
+- **Auditability**: lưu nhật ký thao tác (create/update/delete/approve/reject/export) phục vụ truy vết
+- **Data integrity**: unique keys, enum trạng thái nghiệp vụ, quan hệ ràng buộc xuyên module trên Prisma schema
+
+## API docs
+
+- JSON OpenAPI spec: `/api/docs`
+- Swagger UI: `/api/docs/ui`
+- Lưu ý: spec hiện đang ở dạng khung để mở rộng dần theo từng nhóm endpoint
 
 ## Cài đặt nhanh
 
